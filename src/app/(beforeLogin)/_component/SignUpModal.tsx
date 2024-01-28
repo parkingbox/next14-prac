@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
 
 export default function SignupModal() {
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [image, setImage] = useState("");
+  const [signUp, setSignUp] = useState({
+    id: "",
+    password: "",
+    nickname: "",
+    image: "",
+  });
+
   const [imageFile, setImageFile] = useState<File>();
 
   const router = useRouter();
@@ -17,16 +20,14 @@ export default function SignupModal() {
     // TODO: 뒤로가기가 /home이 아니면 /home으로 보내기
   };
 
-  const onChangeId: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setId(e.target.value);
+  const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { name, value } = e.target;
+    setSignUp({
+      ...signUp,
+      [name]: value,
+    });
   };
 
-  const onChangePassword: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setPassword(e.target.value);
-  };
-  const onChangeNickname: ChangeEventHandler<HTMLInputElement> = (e) => {
-    setNickname(e.target.value);
-  };
   const onChangeImageFile: ChangeEventHandler<HTMLInputElement> = (e) => {
     e.target.files && setImageFile(e.target.files[0]);
   };
@@ -35,12 +36,7 @@ export default function SignupModal() {
     e.preventDefault();
     fetch("http://localhost:9090/api/users", {
       method: "post",
-      body: JSON.stringify({
-        id,
-        nickname,
-        image,
-        password,
-      }),
+      body: JSON.stringify(signUp),
       credentials: "include",
     })
       .then((response: Response) => {
@@ -81,11 +77,12 @@ export default function SignupModal() {
                 </label>
                 <input
                   id="id"
+                  name="id"
                   className={style.input}
                   type="text"
                   placeholder=""
-                  value={id}
-                  onChange={onChangeId}
+                  value={signUp.id}
+                  onChange={onChangeHandler}
                 />
               </div>
               <div className={style.inputDiv}>
@@ -97,8 +94,8 @@ export default function SignupModal() {
                   className={style.input}
                   type="text"
                   placeholder=""
-                  value={nickname}
-                  onChange={onChangeNickname}
+                  value={signUp.nickname}
+                  onChange={onChangeHandler}
                 />
               </div>
               <div className={style.inputDiv}>
@@ -110,8 +107,8 @@ export default function SignupModal() {
                   className={style.input}
                   type="password"
                   placeholder=""
-                  value={password}
-                  onChange={onChangePassword}
+                  value={signUp.password}
+                  onChange={onChangeHandler}
                 />
               </div>
               <div className={style.inputDiv}>
@@ -120,10 +117,11 @@ export default function SignupModal() {
                 </label>
                 <input
                   id="image"
+                  name="image"
                   className={style.input}
                   type="file"
                   accept="image/*"
-                  onChange={onChangeImageFile}
+                  onChange={onChangeHandler}
                 />
               </div>
             </div>
